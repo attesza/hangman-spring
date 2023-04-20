@@ -1,5 +1,7 @@
 package com.attesza.hangman.game.controller;
 
+import com.attesza.hangman.game.dto.GameDto;
+import com.attesza.hangman.game.dto.NewGameDto;
 import com.attesza.hangman.game.dto.WordDto;
 import com.attesza.hangman.game.mapper.GameMapper;
 import com.attesza.hangman.game.repository.GameRepository;
@@ -8,9 +10,7 @@ import com.attesza.hangman.game.service.UserService;
 import com.attesza.hangman.game.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,4 +38,8 @@ public class GameController {
         return userService.currentUser();
     }
 
+    @PostMapping( "/newGame")
+    public GameDto newGame(@RequestBody NewGameDto dto) {
+        return gameMapper.toDto(gameService.createNewGame(dto));
+    }
 }

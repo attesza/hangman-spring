@@ -12,6 +12,10 @@ import java.util.Optional;
 public interface WordsRepository extends JpaRepository<Word, Integer> {
 //    @Query(value = "SELECT * FROM Words w WHERE w.word =>3 ", nativeQuery = true)
 
-    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) < 3")
-    List<Word> findAllByWordLevel(int level);
+    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) < 9")
+    List<Word> findAllByWordLevelEasy();
+    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) > 8 AND LENGTH(w.word)< 12")
+    List<Word> findAllByWordLevelMedium();
+    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) > 11 ")
+    List<Word> findAllByWordLevelHard();
 }

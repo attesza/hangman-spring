@@ -33,8 +33,7 @@ public class Game {
     protected Game() {
     }
 
-    public Game(Integer id, String actualWord, Integer wrongCounter, Word originalWord, User user, GameStateEnum gameState) {
-        this.id = id;
+    public Game(String actualWord, Integer wrongCounter, Word originalWord, User user, GameStateEnum gameState) {
         this.actualWord = actualWord;
         this.wrongCounter = wrongCounter;
         this.originalWord = originalWord;
