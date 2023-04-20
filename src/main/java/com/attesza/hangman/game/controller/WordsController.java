@@ -1,6 +1,6 @@
 package com.attesza.hangman.game.controller;
 
-import com.attesza.hangman.game.dto.WordsDto;
+import com.attesza.hangman.game.dto.WordDto;
 import com.attesza.hangman.game.mapper.WordsMapper;
 import com.attesza.hangman.game.repository.WordsRepository;
 import com.attesza.hangman.game.service.WordsService;
@@ -26,12 +26,12 @@ public class WordsController {
     }
 
     @GetMapping("/words")
-    public List<WordsDto> listAllWords() {
+    public List<WordDto> listAllWords() {
         return wordsMapper.wordsListToDto(wordsService.findAllWords());
     }
 
     @PostMapping("/word")
-    public WordsDto addWord(@RequestBody WordsDto wordsDto){
-        return wordsMapper.wordstoWordsDto(wordsService.addWords(wordsDto));
+    public WordDto addWord(@RequestBody WordDto wordsDto){
+        return wordsMapper.wordtoWordDto(wordsService.addWords(wordsDto));
     }
 }

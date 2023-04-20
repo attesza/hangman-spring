@@ -1,17 +1,15 @@
 package com.attesza.hangman.game.mapper;
 
-import com.attesza.hangman.game.dto.WordsDto;
-import com.attesza.hangman.game.model.Words;
+import com.attesza.hangman.game.dto.WordDto;
+import com.attesza.hangman.game.model.Word;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(config = com.gallows.demo.MappingConfig.class)
 public interface WordsMapper {
 
-    WordsDto wordstoWordsDto(Words words);
+    WordDto wordtoWordDto(Word words);
 
-    List<WordsDto> wordsListToDto(List<Words> words);
+    List<WordDto> wordsListToDto(List<Word> words);
 }

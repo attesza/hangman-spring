@@ -1,22 +1,21 @@
 package com.attesza.hangman.game.model;
 
-import lombok.*;
 import jakarta.persistence.*;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "words")
-public class Words {
+public class Word {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String word;
 
-    protected Words() {
+    protected Word() {
 
     }
 
-    public Words(@NotNull String word) {
+    public Word(@NotNull String word) {
         this.word = word;
     }
 

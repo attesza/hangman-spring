@@ -2,11 +2,11 @@ package com.attesza.hangman.game.dto;
 
 
 
-public class WordsDto {
+public class WordDto {
     private Long id;
     private String word;
 
-    public WordsDto() {
+    public WordDto() {
     }
 
     public Long getId() {
