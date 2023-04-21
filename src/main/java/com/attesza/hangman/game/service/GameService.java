@@ -16,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -75,19 +78,55 @@ public class GameService implements IGameServices {
 
     @Override
     public Game continueGame() {
-        return null;
+        return gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).orElseThrow(() -> new GameException("Game does not exist"));
     }
 
     @Override
     public void stopGame() {
-
+        Game gameEntity = gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).orElseThrow(() -> new GameException("Game does not exist"));
+        gameEntity.setGameState(GameStateEnum.DONE);
+        gameRepository.save(gameEntity);
     }
 
     @Override
     public Game tryChar(Character character) {
-        return null;
-    }
 
+
+        Game game = gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).orElseThrow(() -> new GameException("Game does not exist"));
+
+        if (game.getActualWord().contains(character.toString())){
+            throw new GameException("This character is already used");
+        }
+
+        String originalWord = game.getOriginalWord().getWord();
+        List<Integer> indexes = IntStream.range(0, originalWord.length())
+                .filter(i -> originalWord.charAt(i) ==character).boxed()
+                .toList();
+        log.info("indexes: "+ indexes);
+        if(indexes.isEmpty()){
+            game.setWrongCounter(game.getWrongCounter()+1);
+//            gameRepository.save(game);
+//            throw new GameException("Character is not in the original text");
+        }
+
+        char[] chars = game.getActualWord().toCharArray();
+        log.info("chars: "+ Arrays.toString(chars));
+        indexes.forEach(it->{
+            chars[it] = character;
+        });
+        game.setActualWord(toStringConvert(chars));
+        if(!game.getActualWord().contains("*"))
+        {
+            game.setGameState(GameStateEnum.DONE);
+
+        }
+        return gameRepository.save(game);
+
+    }
+    public static String toStringConvert(char[] a)
+    {
+        return new String(a);
+    }
     private int getRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
