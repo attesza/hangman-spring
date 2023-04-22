@@ -43,19 +43,19 @@ public class GameController {
         return gameMapper.toDto(gameService.createNewGame(dto));
     }
 
-    @PostMapping(path = "/stopGame")
+    @PostMapping("/stopGame")
     public void stopGame() {
         gameService.stopGame();
     }
 
 
 
-    @PostMapping(path = "/continueGame")
+    @PostMapping("/continueGame")
     public GameDto continueGame() {
         return gameMapper.toDto(gameService.continueGame());
     }
 
-    @PostMapping(path = "/tryChar")
+    @PostMapping("/tryChar")
     public GameDto attempt(@RequestParam(name = "char") Character character){
         return gameMapper.toDto(gameService.tryChar(character));
     }
