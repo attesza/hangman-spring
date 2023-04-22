@@ -59,6 +59,11 @@ public class GameController {
         return gameMapper.toDto(gameService.tryChar(character));
     }
 
+    @GetMapping("/hasActiveGame")
+    public boolean hasActiveGame(){
+        return gameService.hasActive();
+    }
+
     @GetMapping("/topTen")
     public List<HighScoreDto> topTenList(){
         return gameService.getTopList();

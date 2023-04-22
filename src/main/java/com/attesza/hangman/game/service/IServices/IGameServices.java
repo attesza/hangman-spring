@@ -10,6 +10,7 @@ import java.util.List;
 public interface IGameServices {
     Game createNewGame(NewGameDto newGameDto);
 
+    boolean hasActive();
     Game continueGame();
 
     List<HighScoreDto> getTopList();

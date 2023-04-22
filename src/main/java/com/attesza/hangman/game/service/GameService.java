@@ -82,6 +82,11 @@ public class GameService implements IGameServices {
     }
 
     @Override
+    public boolean hasActive() {
+        return gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).isPresent();
+    }
+
+    @Override
     public Game continueGame() {
         return gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).orElseThrow(() -> new GameException("Game does not exist"));
     }
