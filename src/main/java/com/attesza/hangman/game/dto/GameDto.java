@@ -4,9 +4,18 @@ public class GameDto {
     private Integer wrongCounter;
 
     private String actualWord;
+    private String triedCharacter;
 
     public Integer getWrongCounter() {
         return wrongCounter;
+    }
+
+    public String getTriedCharacter() {
+        return triedCharacter;
+    }
+
+    public void setTriedCharacter(String triedCharacter) {
+        this.triedCharacter = triedCharacter;
     }
 
     public void setWrongCounter(Integer wrongCounter) {

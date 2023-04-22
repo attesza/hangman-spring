@@ -18,6 +18,8 @@ public class Game {
     @Column(name = "wrong_counter")
     private Integer wrongCounter;
 
+    @Column(name = "wrong_character")
+    private String triedCharacter;
     @ManyToOne
     @JoinColumn(name = "word_id")
     private Word originalWord;
@@ -33,12 +35,20 @@ public class Game {
     protected Game() {
     }
 
-    public Game(String actualWord, Integer wrongCounter, Word originalWord, User user, GameStateEnum gameState) {
+    public Game(String actualWord, Integer wrongCounter, Word originalWord, String triedCharacter, User user, GameStateEnum gameState) {
         this.actualWord = actualWord;
         this.wrongCounter = wrongCounter;
         this.originalWord = originalWord;
         this.user = user;
         this.gameState = gameState;
+    }
+
+    public String getTriedCharacter() {
+        return triedCharacter;
+    }
+
+    public void setTriedCharacter(String triedCharacter) {
+        this.triedCharacter = triedCharacter;
     }
 
     public Integer getId() {
