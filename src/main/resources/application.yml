@@ -1,22 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5434/hangman
+    url: jdbc:postgresql://localhost:5433/hangman
     username: postgres
-    password: root
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate:
-      ddl-auto: create
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
 logging:
   level:
     root=DEBUG:

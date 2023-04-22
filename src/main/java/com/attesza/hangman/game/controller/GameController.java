@@ -1,13 +1,17 @@
 package com.attesza.hangman.game.controller;
 
 import com.attesza.hangman.game.dto.GameDto;
+import com.attesza.hangman.game.dto.HighScoreDto;
 import com.attesza.hangman.game.dto.NewGameDto;
 import com.attesza.hangman.game.dto.WordDto;
 import com.attesza.hangman.game.mapper.GameMapper;
+import com.attesza.hangman.game.mapper.UserMapper;
+import com.attesza.hangman.game.model.GameHighScore;
 import com.attesza.hangman.game.repository.GameRepository;
 import com.attesza.hangman.game.service.GameService;
 import com.attesza.hangman.game.service.UserService;
 import com.attesza.hangman.game.user.User;
+import com.attesza.hangman.game.user.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +26,16 @@ public class GameController {
     private GameMapper gameMapper;
     private GameService gameService;
 
-    private UserService userService;
     private GameRepository gameRepository;
 
     @Autowired
-    public GameController(GameMapper gameMapper, GameService gameService, UserService userService, GameRepository gameRepository) {
+    public GameController(GameMapper gameMapper, GameService gameService,  GameRepository gameRepository) {
         this.gameMapper = gameMapper;
         this.gameService = gameService;
-        this.userService = userService;
         this.gameRepository = gameRepository;
     }
 
-    @GetMapping("/getCurrentUser")
-    public User getCurrentUser() {
-        return userService.currentUser();
-    }
+
 
     @PostMapping( "/newGame")
     public GameDto newGame(@RequestBody NewGameDto dto) {
@@ -58,5 +57,10 @@ public class GameController {
     @PostMapping("/tryChar")
     public GameDto attempt(@RequestParam(name = "char") Character character){
         return gameMapper.toDto(gameService.tryChar(character));
+    }
+
+    @GetMapping("/topTen")
+    public List<HighScoreDto> topTenList(){
+        return gameService.getTopList();
     }
 }

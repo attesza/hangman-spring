@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper(config = com.gallows.demo.MappingConfig.class)
 public interface WordsMapper {
 
-    WordDto wordtoWordDto(Word words);
+    WordDto wordtoWordDto(Word word);
 
     List<WordDto> wordsListToDto(List<Word> words);
 }

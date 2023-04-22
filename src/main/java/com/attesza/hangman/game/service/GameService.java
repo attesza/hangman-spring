@@ -1,23 +1,25 @@
 package com.attesza.hangman.game.service;
 
+import com.attesza.hangman.game.dto.HighScoreDto;
 import com.attesza.hangman.game.dto.NewGameDto;
 import com.attesza.hangman.game.enums.GameStateEnum;
 import com.attesza.hangman.game.exception.GameException;
 import com.attesza.hangman.game.model.Game;
+import com.attesza.hangman.game.model.GameHighScore;
 import com.attesza.hangman.game.model.Word;
+import com.attesza.hangman.game.repository.GameHighScoreRepository;
 import com.attesza.hangman.game.repository.GameRepository;
 import com.attesza.hangman.game.repository.WordsRepository;
 import com.attesza.hangman.game.service.IServices.IGameServices;
-import com.zaxxer.hikari.util.FastList;
+import com.attesza.hangman.game.user.User;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,12 +30,14 @@ public class GameService implements IGameServices {
     private final GameRepository gameRepository;
     private final WordsRepository wordsRepository;
 
+    private final GameHighScoreRepository gameHighScoreRepository;
     private final UserService userService;
 
     @Autowired
-    public GameService(GameRepository gameRepository, WordsRepository wordsRepository, UserService userService) {
+    public GameService(GameRepository gameRepository, WordsRepository wordsRepository, GameHighScoreRepository gameHighScoreRepository, UserService userService) {
         this.gameRepository = gameRepository;
         this.wordsRepository = wordsRepository;
+        this.gameHighScoreRepository = gameHighScoreRepository;
         this.userService = userService;
     }
 
@@ -48,9 +52,10 @@ public class GameService implements IGameServices {
             case 3 -> {
                 return wordsRepository.findAllByWordLevelHard();
             }
-
+            default -> {
+                throw new GameException("Unsupported game level");
+            }
         }
-        return null;
     }
 
     @Override
@@ -82,6 +87,25 @@ public class GameService implements IGameServices {
     }
 
     @Override
+    public List<HighScoreDto> getTopList() {
+        List<GameHighScore> game = gameHighScoreRepository.findTop();
+        List<HighScoreDto> highScore = game.stream().map(it -> {
+            return new HighScoreDto(it.getUser().getFirstname() + " " + it.getUser().getLastname(), it.getScore());
+        }).collect(Collectors.toList());
+        if (userService.isLoggedIn()) {
+            User user = userService.currentUser();
+            if (game.stream().anyMatch(gameHighScore -> Objects.equals(gameHighScore.getUser().getId(), user.getId()))) {
+                return highScore;
+            } else {
+                gameHighScoreRepository.findById(user.getId()).map(gameHighScore -> new HighScoreDto(gameHighScore.getUser()
+                        .getFirstname() + " " + gameHighScore.getUser().getLastname(), gameHighScore.getScore())).ifPresent(highScore::add);
+            }
+        }
+        return highScore;
+
+    }
+
+    @Override
     public void stopGame() {
         Game gameEntity = gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).orElseThrow(() -> new GameException("Game does not exist"));
         gameEntity.setGameState(GameStateEnum.DONE);
@@ -94,6 +118,7 @@ public class GameService implements IGameServices {
 
         Game game = gameRepository.findByUserAndGameState(userService.currentUser(), GameStateEnum.ACTIVE).orElseThrow(() -> new GameException("Game does not exist"));
         String stringBuilder;
+
         if (game.getTriedCharacter() != null) {
             stringBuilder = game.getTriedCharacter() +
                     character.toString();
@@ -112,8 +137,6 @@ public class GameService implements IGameServices {
         log.info("indexes: " + indexes);
         if (indexes.isEmpty()) {
             game.setWrongCounter(game.getWrongCounter() + 1);
-//            gameRepository.save(game);
-//            throw new GameException("Character is not in the original text");
         }
 
         char[] chars = game.getActualWord().toCharArray();
@@ -123,8 +146,14 @@ public class GameService implements IGameServices {
         });
         game.setActualWord(toStringConvert(chars));
         if (!game.getActualWord().contains("*")) {
+            if (gameHighScoreRepository.existsById(game.getUser().getId())) {
+                gameHighScoreRepository.addPoint(game.getUser());
+            } else {
+                gameHighScoreRepository.save(new GameHighScore(game.getUser(), 1));
+            }
+            game.setGameState(GameStateEnum.SUCCESS);
+        } else if (game.getWrongCounter() == 6) {
             game.setGameState(GameStateEnum.DONE);
-
         }
         return gameRepository.save(game);
 

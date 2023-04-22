@@ -18,7 +18,7 @@ public class Game {
     @Column(name = "wrong_counter")
     private Integer wrongCounter;
 
-    @Column(name = "wrong_character")
+    @Column(name = "tried_character")
     private String triedCharacter;
     @ManyToOne
     @JoinColumn(name = "word_id")
