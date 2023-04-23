@@ -1,6 +1,7 @@
 package com.attesza.hangman.game.auth;
 
 import com.attesza.hangman.game.config.JwtService;
+import com.attesza.hangman.game.exception.GameException;
 import com.attesza.hangman.game.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,8 +23,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();

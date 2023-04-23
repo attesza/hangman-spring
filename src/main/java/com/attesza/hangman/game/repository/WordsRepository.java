@@ -1,6 +1,7 @@
 package com.attesza.hangman.game.repository;
 
 import com.attesza.hangman.game.model.Word;
+import com.attesza.hangman.game.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,10 +15,10 @@ public interface WordsRepository extends JpaRepository<Word, Integer> {
 
     boolean existsByWord(String word);
 
-    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) < 9")
-    List<Word> findAllByWordLevelEasy();
-    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) > 8 AND LENGTH(w.word)< 12")
-    List<Word> findAllByWordLevelMedium();
-    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) > 11 ")
-    List<Word> findAllByWordLevelHard();
+    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) < 9 AND not exists (select game.originalWord.id from Game game where game.user = :user and game.originalWord=w)")
+    List<Word> findAllByWordLevelEasy(User user);
+    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) > 8 AND LENGTH(w.word)< 12 AND not exists (select game.originalWord.id from Game game where game.user = :user and game.originalWord=w)")
+    List<Word> findAllByWordLevelMedium(User user);
+    @Query("SELECT w FROM Word w WHERE LENGTH( w.word) > 11 AND not exists (select game.originalWord.id from Game game where game.user = :user and game.originalWord=w)")
+    List<Word> findAllByWordLevelHard(User user);
 }

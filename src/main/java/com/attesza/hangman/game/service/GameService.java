@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,16 +42,16 @@ public class GameService implements IGameServices {
         this.userService = userService;
     }
 
-    public List<Word> allByLevel(Integer level) {
+    public List<Word> allByLevel(Integer level, User user) {
         switch (level) {
             case 1 -> {
-                return wordsRepository.findAllByWordLevelEasy();
+                return wordsRepository.findAllByWordLevelEasy(user);
             }
             case 2 -> {
-                return wordsRepository.findAllByWordLevelMedium();
+                return wordsRepository.findAllByWordLevelMedium(user);
             }
             case 3 -> {
-                return wordsRepository.findAllByWordLevelHard();
+                return wordsRepository.findAllByWordLevelHard(user);
             }
             default -> {
                 throw new GameException("Unsupported game level");
@@ -64,10 +65,10 @@ public class GameService implements IGameServices {
             it.setGameState(GameStateEnum.DONE);
             gameRepository.save(it);
         });
-        List<Word> allByLevel = allByLevel(newGameDto.getLevel());
+        List<Word> allByLevel = allByLevel(newGameDto.getLevel(), userService.currentUser());
 
         if (!allByLevel.isEmpty()) {
-            Word word = allByLevel.get(getRandomNumber(0, allByLevel.size() - 1));
+            Word word = allByLevel.get(getRandomNumber(0, allByLevel.size()));
             log.info("words: " + word);
             String replacedWord = word.getWord().replaceAll(".", "*");
             Game game = new Game(replacedWord, 0, word, null, userService.currentUser(), GameStateEnum.ACTIVE);
@@ -169,6 +170,6 @@ public class GameService implements IGameServices {
     }
 
     private int getRandomNumber(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 }

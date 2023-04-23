@@ -65,7 +65,6 @@ VALUES ('reward'),
        ('constitutional'),
        ('discrimination'),
        ('recommendation');
-
 CREATE TABLE game
 (
     "id"              SERIAL PRIMARY KEY,
@@ -91,6 +90,7 @@ CREATE TABLE game_higscore
     "score"   int not null
 );
 INSERT INTO game_higscore (user_id, score)
-VALUES (1,4),(3,2);
+VALUES (1, 4),
+       (3, 2);
 
 
